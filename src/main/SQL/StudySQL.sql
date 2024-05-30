@@ -251,5 +251,100 @@ from employees.employees;   # 대용량 데이터 생성 기존의 대량의 데
 use sqldb;
 select * from testtbl4;
 
+create table testtbl5
+    (select emp_no, first_name, last_name from employees.employees );
+
+update testtbl4 set Lname = '없음' where Fname = 'Kyoichi';
+select * from testtbl4;
+
+use sqldb;
+update buytbl set price = price * 1.5; # 이렇게 where 절을 빼고 쿼리문 작성을 하면 set 이후 해당 컬럼에 모두 적용이 된다.
+
+select * from buytbl;
+
+delete
+from testtbl4
+where Fname = 'Aamer';
+
+select testtbl4.Fname as firstName from testtbl4 where Fname = 'Aamer';
+delete from testTbl4 where Fname = 'Aamer' LIMIT 5; # LIMIT 를 붙이며 상위 5건만 삭제된다.
+
+create TABLE bigtbl1 (select * from employees.employees);
+
+select * from bigtbl1;
+
+update bigtbl1 set first_name = '변동환';
+
+delete from bigtbl1 where first_name = '변동환';
+
+drop table bigtbl1;
+
+create TABLE bigtbl2 (select * from employees.employees);
+create TABLE bigtbl3 (select * from employees.employees);
+
+delete from bigtbl1; # 트랜젝션 로그 기록까지 삭제 했다
+drop table bigtbl2;  # 테이블 자체를 삭제를 핟다.
+truncate table bigtbl3; # 테이블 구조는 남겨놓고 삭제를 한다.
+
+create table membertbl (select userid, name, addr from usertbl LIMIT 3); # 이렇게 작성을 하면 3건만 가져온다.
+
+alter table membertbl
+    add constraint pk_membertbl primary key  (userid); # <-------- 작성을 하면 PK를 지정을 한다.
+select * from membertbl;
+
+insert into membertbl values ('BBk', '바비코','미국');
+insert into membertbl values ('SJH','서장훈','서울');
+insert into  membertbl values ('HJY','현주엽','경기');
+
+insert ignore into membertbl values ('BBk', '바비코','미국'); # ignore를 사용하면 PK가 중복이 되어도 에러가 발생하지 않는다.
+insert ignore into membertbl values ('SJH','서장훈','서울');
+insert ignore into  membertbl values ('HJY','현주엽','경기');
+
+
+
+use sqldb;
+
+select userid,sum(price*buytbl.amount) from buytbl;
+
+select buytbl.userid as '사용자', sum(buytbl.price * buytbl.amount) as '총 구매 금액'
+ from buytbl order by buytbl.userid;
+
+use sqldb;
+
+select userid, amount from buytbl order by userid; # userid로 정렬을 한다.
+
+# order by 는 기본이 오름차순이다. DESC를 사용하면 내림차순으로 정렬이 된다. ASC를 사용하면 오름차순으로 정렬이 된다.
+
+select userid, sum(amount) from buytbl group by userid; # group by 를 사용하면 그룹별로 데이터를 묶어서 조회를 한다.
+# select userid, sum(amount) from buytbl group by userid; 이렇게 작성을 하면 userid로 그룹을 묶어서 amount의 합계를 구한다.
+# group by 를 사용하는 이유는 그룹별로 데이터를 묶어서 조회를 하기 위해서 사용한다. 예를 들어 사용자별로 구매한 총 금액을 조회 할 때 사용한다. 그리고 group by 뒤에 컬럼을 적어줘야 한다. 그래야 그 컬럼으로 그룹을 묶어서 조회를 한다.
+# 중복을 제거를 하지는 않는다 다만 조회를 할 때 그룹별로 묶어서 조회를 한다. 중복을 제거를 하려면 distinct를 사용하면 된다.
+
+select userid, avg (amount) from buytbl group by userid; # avg : 평균값을 조회
+# select userid, avg (amount) from buytbl group by userid; 이렇게 작성을 하면 userid로 그룹을 묶어서 amount의 평균값을 구한다.
+
+ select name, max(usertbl.height), min(usertbl.height) from usertbl; # max : 최대값, min : 최소값
+
+
+select name, max(usertbl.height), min(usertbl.height) from usertbl group by name; # max : 최대값, min : 최소값
+# select name, max(usertbl.height), min(usertbl.height) from usertbl group by name; 이렇게 작성을 하면 name으로 그룹을 묶어서 height의 최대값과 최소값을 구한다.
+
+select name, usertbl.height
+    from usertbl
+        where height = (select max(height) from usertbl)
+        or height = (select min(height) from usertbl); # 서브쿼리를 사용하여 최대값과 최소값을 조회 할 수 있다.
+        #이 쿼리에서 (SELECT max(height) FROM usertbl)와 (SELECT min(height) FROM usertbl)는 서브쿼리로, usertbl 테이블의 height 값 중에서 최대값과 최소값을 각각 찾습니다. 이렇게 찾은 최대값과 최소값은 메인 쿼리의 WHERE 절에서 height의 값과 비교되어 해당하는 행을 선택하는 데 사용됩니다.
+       # height 에다가 각각 최대값과 최소값을 조회를 해서 넣을 값을 where 절에 넣어서 조회를 한다.
+
+
+
+
+
+
+
+
+
+
+
 
 
